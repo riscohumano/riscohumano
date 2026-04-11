@@ -819,7 +819,7 @@ function initChat(){
   document.getElementById('assistente-display').innerHTML=h;
 
   const cb=document.getElementById('chatbox');cb.innerHTML='';
-  addMsg('ai','Seu diagnóstico está pronto. Pode me perguntar qualquer coisa sobre sua situação financeira — vou responder com base no seu perfil real.');
+  D.historico=[];
 }
 
 function addMsg(tipo,txt){
@@ -834,14 +834,24 @@ async function enviar(){
   el.value='';
   const btn=document.getElementById('send-btn'); btn.disabled=true;
   addMsg('us',t);
-  const loading=addMsg('loading','digitando...');
+  const loading=addMsg('loading','...');
   try {
     const resp=await chamarAPI({
       tipo:'chat',
-      dados:{pergunta:t, contexto:D.contextoChat||buildContexto()}
+      dados:{
+        pergunta:t,
+        contexto:D.contextoChat||buildContexto(),
+        historico:D.historico||[]
+      }
     });
     document.getElementById('chatbox').removeChild(loading);
     addMsg('ai',resp);
+    // Salva histórico para próxima mensagem
+    if(!D.historico) D.historico=[];
+    D.historico.push({role:'user',content:t});
+    D.historico.push({role:'assistant',content:resp});
+    // Mantém só as últimas 10 trocas
+    if(D.historico.length>20) D.historico=D.historico.slice(-20);
   } catch(e){
     document.getElementById('chatbox').removeChild(loading);
     addMsg('ai','Não foi possível conectar. Tente novamente.');
