@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risco Humano — Diagnóstico Financeiro</title>
+<meta name="description" content="Diagnóstico financeiro comportamental. Não é app de orçamento. É engenharia da decisão.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f2ee;--bg2:#eceae5;--surface:#fff;
+  --text:#1a1d26;--text2:#4a4e5c;--text3:#8a8e9a;
+  --orange:#eb5c20;--orange2:#f07040;--ol:#fdf1ec;
+  --green:#2d7a5a;--red:#c0392b;--gl:#edf7f2;--rl:#fdf0ee;
+  --border:rgba(26,29,38,0.1);--border2:rgba(26,29,38,0.06);
+  --dark:#212531;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:520px;min-height:100vh}
+.screen{display:none;flex-direction:column;min-height:100vh;padding:44px 28px 52px;animation:fi 0.3s ease}
+.screen.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+.nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.nav-back{background:none;border:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;padding:0;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.16s}
+.nav-back:hover{color:var(--text2)}
+.nav-restart{background:none;border:1px solid var(--border);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:10px;cursor:pointer;padding:4px 10px;border-radius:4px;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.16s}
+.nav-restart:hover{border-color:var(--orange);color:var(--orange)}
+.step-ind{display:flex;align-items:center;gap:6px;margin-bottom:26px;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+.si{font-size:11px;color:var(--text3);font-weight:300}
+.si.now{color:var(--orange);font-weight:500}
+.si-arr{font-size:9px;color:var(--text3)}
+
+/* TIPO */
+.spacer{flex:1}.sp{flex:0.4}
+.lbl{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;font-weight:500}
+.snum{font-size:10px;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:8px;font-weight:500}
+.h1{font-size:25px;font-weight:300;line-height:1.32;color:var(--text);margin-bottom:14px;letter-spacing:-0.02em}
+.h1 b{font-weight:500}
+.sub{font-size:15px;color:var(--text2);line-height:1.75;font-weight:300}
+.div-line{width:28px;height:2px;background:var(--orange);margin:18px 0;opacity:0.6}
+.prog{display:flex;gap:4px;margin-bottom:32px}
+.ps{height:2px;flex:1;background:var(--border);border-radius:1px;transition:background 0.3s}
+.ps.d{background:var(--orange);opacity:0.35}.ps.a{background:var(--orange)}
+
+/* BOTÕES */
+.bp{background:var(--orange);color:#fff;border:none;padding:16px 24px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;border-radius:6px;cursor:pointer;width:100%;transition:all 0.16s}
+.bp:hover{background:var(--orange2);transform:translateY(-1px)}
+.bp:active{transform:translateY(0)}
+.bp:disabled{opacity:0.6;transform:none;cursor:not-allowed}
+.cb{background:var(--surface);color:var(--text);border:1px solid var(--border);padding:16px 18px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:400;border-radius:8px;cursor:pointer;width:100%;text-align:left;transition:all 0.16s;margin-bottom:9px}
+.cb:hover{border-color:var(--orange);background:var(--ol)}
+.cb .ex{display:block;font-size:12px;color:var(--text3);margin-top:4px;font-weight:300;line-height:1.5}
+
+/* FORM */
+.sec{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:10px}
+.sec-h{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
+.sec-tag{font-size:10px;color:var(--orange);background:var(--ol);padding:2px 8px;border-radius:3px}
+.ni{margin-bottom:11px}
+.nl{font-size:13px;color:var(--text);margin-bottom:3px;font-weight:400}
+.nl small{color:var(--text3);font-size:11px;font-weight:300;display:block;margin-top:1px;line-height:1.4}
+.ni input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:300;padding:10px 12px;width:100%;border-radius:6px;outline:none;transition:border-color 0.16s}
+.ni input:focus{border-color:var(--orange)}
+.ni input::placeholder{color:var(--text3)}
+.ng{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* DRE */
+.dre-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.dre-sum{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;transition:background 0.16s;user-select:none}
+.dre-sum:hover{background:var(--bg2)}
+.dre-sum.bl-pos{border-left:3px solid var(--green)}
+.dre-sum.bl-neg{border-left:3px solid var(--red)}
+.dre-sum.bl-ora{border-left:3px solid var(--orange)}
+.dre-sl{flex:1}
+.dre-slbl{font-size:14px;font-weight:500;color:var(--text)}
+.dre-ssub{font-size:11px;color:var(--text3);margin-top:2px;font-weight:300}
+.dre-sr{display:flex;align-items:center;gap:10px}
+.dre-val{font-size:16px;font-weight:500}
+.dre-val.pos{color:var(--green)}.dre-val.neg{color:var(--red)}.dre-val.ora{color:var(--orange)}
+.dre-pct{font-size:11px;color:var(--text3);font-weight:300}
+.dre-tog{font-size:10px;color:var(--text3);background:var(--bg2);padding:3px 8px;border-radius:3px;white-space:nowrap}
+.dre-det{display:none;border-top:1px solid var(--border2)}
+.dre-det.open{display:block}
+.dre-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--border2);font-size:13px}
+.dre-row:last-child{border-bottom:none}
+.dl{color:var(--text2);font-weight:300}.dv{font-weight:400;color:var(--text)}
+
+/* ANÁLISE TOP 5 */
+.analysis{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:10px}
+.ah{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;font-weight:500}
+.ri{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rn{font-size:11px;font-weight:500;color:var(--orange);min-width:16px}
+.rl2{flex:1;font-size:13px;color:var(--text);font-weight:400;min-width:80px}
+.rbw{flex:1.5;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.rb{height:100%;border-radius:2px;background:var(--orange);transition:width 0.8s ease}
+.rv{font-size:12px;font-weight:500;color:var(--text);min-width:60px;text-align:right}
+.rp{font-size:10px;color:var(--text3);margin-left:2px}
+
+/* DIAGNÓSTICO IA */
+.diag-box{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:8px;padding:22px;margin-bottom:12px;position:relative}
+.diag-loading{display:flex;align-items:center;gap:12px;padding:20px 0}
+.diag-spinner{width:20px;height:20px;border:1.5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.diag-loading-txt{font-size:13px;color:var(--text3);font-weight:300;font-style:italic}
+.diag-title{font-size:19px;font-weight:500;color:var(--text);margin-bottom:12px;line-height:1.3}
+.diag-body{font-size:15px;color:var(--text2);line-height:1.8;font-weight:300;white-space:pre-wrap}
+.diag-body em{color:var(--orange);font-style:italic}
+.diag-error{font-size:13px;color:var(--red);font-weight:300;padding:12px;background:var(--rl);border-radius:6px;margin-top:8px}
+
+/* JORNADA */
+.jc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:8px}
+.jph{display:flex;gap:12px;align-items:flex-start}
+.jdot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.jtit{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.jdesc{font-size:13px;color:var(--text3);font-weight:300;line-height:1.5}
+
+/* FASE PILLS */
+.pr{display:flex;align-items:center;gap:5px;margin:12px 0 16px;flex-wrap:wrap}
+.pp{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:4px 9px;border:1px solid var(--border);border-radius:3px}
+.pp.n{color:var(--orange);border-color:rgba(235,92,32,0.35);background:var(--ol)}
+.pa{color:var(--text3);font-size:9px}
+
+/* BIO */
+.br{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:13px 16px;margin-bottom:7px}
+.br-top{display:flex;align-items:center;gap:14px}
+.bl2{min-width:130px}
+.blb{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.bv{font-size:22px;font-weight:300;color:var(--text)}
+.bu{font-size:11px;color:var(--text3);margin-left:2px}
+.bt{flex:1;height:3px;background:var(--bg2);border-radius:1px;overflow:hidden}
+.bf{height:100%;border-radius:1px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+.fr{background:var(--red)}.fy{background:var(--orange)}.fg{background:var(--green)}
+.br-formula{font-size:11px;color:var(--text3);margin-top:8px;padding:7px 10px;background:var(--bg2);border-radius:4px;font-weight:300;line-height:1.5}
+.br-formula b{color:var(--text2);font-weight:500}
+.bn-note{font-size:13px;color:var(--text3);line-height:1.6;margin-top:8px;padding-top:10px;border-top:1px solid var(--border2);font-weight:300}
+
+/* PROGNÓSTICO */
+.prog-section{margin-bottom:16px}
+.prog-lbl{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;margin-bottom:10px}
+.prog-lbl.r{color:var(--red)}.prog-lbl.g{color:var(--green)}.prog-lbl.n{color:var(--text3)}
+.bn-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:8px}
+.bn-card.ar{border-left:3px solid var(--red)}.bn-card.ag{border-left:3px solid var(--green)}.bn-card.ao{border-left:3px solid var(--orange)}
+.bn-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.bn-label{font-size:13px;color:var(--text2);font-weight:300;line-height:1.55;flex:1}
+.bn-label b{color:var(--text);font-weight:500}
+.bn-number{text-align:right;flex-shrink:0}
+.bn-value{font-size:24px;font-weight:300;letter-spacing:-0.02em;line-height:1}
+.bn-value.red{color:var(--red)}.bn-value.green{color:var(--green)}.bn-value.orange{color:var(--orange)}
+.bn-unit{font-size:11px;color:var(--text3);margin-top:3px;font-weight:300}
+.bn-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bn-bar-bg{flex:1;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.bn-bar-fill{height:100%;border-radius:2px}
+.bn-bar-pct{font-size:11px;color:var(--text3);font-weight:300;min-width:40px;text-align:right}
+.bn-note2{font-size:12px;color:var(--text3);padding-top:10px;border-top:1px solid var(--border2);font-weight:300;line-height:1.55}
+.bn-note2 b{color:var(--text2);font-weight:500}
+.flow-visual{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:8px}
+.flow-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;font-weight:500}
+.flow-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.flow-lbl{font-size:12px;color:var(--text2);font-weight:300;width:110px;flex-shrink:0}
+.flow-bw{flex:1;height:7px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.flow-b{height:100%;border-radius:3px;transition:width 0.9s ease}
+.flow-v{font-size:12px;font-weight:500;color:var(--text);width:60px;text-align:right;flex-shrink:0}
+.flow-p{font-size:10px;color:var(--text3);width:28px;text-align:right;flex-shrink:0}
+.flow-div{height:1px;background:var(--border2);margin:8px 0}
+.flow-ins{background:var(--ol);border:1px solid rgba(235,92,32,0.15);border-radius:5px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.55;font-weight:300}
+.flow-ins b{color:var(--orange);font-weight:500}
+.calc-src{background:var(--bg2);border-radius:5px;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--text3);font-weight:300;line-height:1.5}
+
+/* PAYWALL */
+.pw-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:14px}
+.pw-val{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.pv{display:flex;align-items:flex-start;gap:9px;font-size:14px;color:var(--text2);line-height:1.5;font-weight:300}
+.pv-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);margin-top:6px;flex-shrink:0}
+.ef{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;padding:12px 14px;width:100%;border-radius:6px;outline:none;margin-bottom:12px;transition:border-color 0.16s}
+.ef:focus{border-color:var(--orange)}
+.ef::placeholder{color:var(--text3)}
+
+/* PROTOCOLO */
+.ms{background:var(--ol);border:1px solid rgba(235,92,32,0.2);border-radius:6px;padding:9px 14px;font-size:12px;color:var(--text2);text-align:center;margin-bottom:18px;font-weight:300}
+.tb{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px 18px;margin-bottom:8px}
+.tl{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;font-weight:500}
+.tt{font-size:14px;color:var(--text2);line-height:1.7;font-weight:300}
+.ti{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:6px;font-weight:300;padding-left:14px;position:relative}
+.ti::before{content:'—';position:absolute;left:0;color:var(--orange);font-size:11px}
+.ti-math{font-size:12px;color:var(--text3);background:var(--bg2);padding:6px 10px;border-radius:4px;margin-bottom:10px;line-height:1.5}
+
+/* ASSISTENTE */
+.chat-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.chat-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.chat-ttl{font-size:12px;font-weight:500;color:var(--text)}
+.chat-sub{font-size:11px;color:var(--text3);font-weight:300}
+.alert-box{background:var(--rl);border:1px solid rgba(192,57,43,0.2);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+.alert-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px;font-weight:500}
+.alert-txt{font-size:13px;color:var(--text2);line-height:1.55;font-weight:300}
+.hi-box{background:var(--gl);border:1px solid rgba(45,122,90,0.2);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+.hi-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:4px;font-weight:500}
+.hi-txt{font-size:13px;color:var(--text2);line-height:1.55;font-weight:300}
+.info-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+.info-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-weight:500}
+.info-txt{font-size:13px;color:var(--text2);line-height:1.6;font-weight:300}
+.ca{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;margin-top:8px;max-height:320px;overflow-y:auto}
+.ca::-webkit-scrollbar{width:2px}
+.ca::-webkit-scrollbar-thumb{background:var(--border);border-radius:1px}
+.mg{padding:11px 14px;border-radius:6px;font-size:14px;line-height:1.6;max-width:88%;font-weight:300}
+.mg.ai{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-start}
+.mg.us{background:var(--ol);border:1px solid rgba(235,92,32,0.2);color:var(--text);align-self:flex-end}
+.mg.loading{background:var(--bg2);border:1px solid var(--border);color:var(--text3);align-self:flex-start;font-style:italic}
+.cr{display:flex;gap:8px}
+.cf{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;padding:10px 12px;border-radius:6px;outline:none;transition:border-color 0.16s}
+.cf:focus{border-color:rgba(235,92,32,0.5)}
+.cf::placeholder{color:var(--text3)}
+.sb{background:var(--orange);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-size:14px;transition:background 0.16s}
+.sb:hover{background:var(--orange2)}
+.sb:disabled{opacity:0.5;cursor:not-allowed}
+
+/* LOADING */
+.proc{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:24px}
+.sp2{width:34px;height:34px;border:1.5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pt{font-size:15px;color:var(--text2);text-align:center;line-height:1.75;font-weight:300;font-style:italic;max-width:220px}
+.disc-txt{font-size:12px;color:var(--text3);text-align:center;line-height:1.6;font-weight:300;margin-bottom:20px}
+
+@media(max-width:480px){.screen{padding:36px 18px 44px}.h1{font-size:22px}.ng{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- S0: ENTRADA -->
+<div class="screen active" id="s0">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <svg width="32" height="32" viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="10" fill="#212531"/><path d="M50 12 Q57 12 62 20 L82 56 Q87 65 82 73 Q77 81 68 81 L32 81 Q23 81 18 73 Q13 65 18 56 L38 20 Q43 12 50 12Z" fill="#eb5c20"/><path d="M50 28 Q53 28 55 32 L67 54 Q69 58 67 61 Q65 64 62 64 L38 64 Q35 64 33 61 Q31 58 33 54 L45 32 Q47 28 50 28Z" fill="#212531"/></svg>
+    <span style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8e9a;font-weight:500">Risco Humano</span>
+  </div>
+  <div class="sp"></div>
+  <div class="h1">O dinheiro entra. A vida puxa. Três dias depois, você abre o banco e pensa: <b>como já foi tanto?</b></div>
+  <div class="div-line"></div>
+  <div class="sub" style="margin-bottom:28px">Nem sempre é gasto. Às vezes é compromisso demais. Às vezes é o jeito como você decide.</div>
+  <button class="cb" onclick="entrada('A')">Nunca sobra nada<span class="ex">O salário some antes do fim do mês. Às vezes preciso do cartão ou de ajuda para fechar.</span></button>
+  <button class="cb" onclick="entrada('B')">Sobra, mas some<span class="ex">Tem dinheiro no começo do mês. No fim, sumiu. Não virou reserva nem investimento.</span></button>
+  <button class="cb" onclick="entrada('C')">Estou bem, quero ir mais rápido<span class="ex">Tenho reserva, invisto, não devo. Mas sinto que poderia avançar muito mais.</span></button>
+</div>
+
+<!-- S1: INTAKE -->
+<div class="screen" id="s1">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s0')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="prog" id="prog"></div>
+  <div class="snum" id="qnum">01 / 06</div>
+  <div class="h1" id="qtxt" style="font-size:21px;margin-bottom:20px"></div>
+  <div id="qopts"></div>
+</div>
+
+<!-- S2: LOADING -->
+<div class="screen" id="s2">
+  <div class="proc"><div class="sp2"></div><div class="pt">Mapeando o padrão.<br>Não o quanto você gasta.<br>Como você decide.</div></div>
+</div>
+
+<!-- S3: FORM DRE -->
+<div class="screen" id="s3">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s1')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si now">Diagnóstico</span><span class="si-arr">→</span><span class="si">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div class="lbl">sua situação financeira</div>
+  <div style="font-size:13px;color:var(--text3);font-weight:300;margin-bottom:18px;line-height:1.6">Preencha o que souber. Estimativas funcionam — quanto mais preciso, mais útil o diagnóstico.</div>
+
+  <div class="sec">
+    <div class="sec-h">O que entra todo mês <span class="sec-tag">receita</span></div>
+    <div class="ni"><div class="nl">Salário líquido mensal<small>Valor que cai na conta depois de todos os descontos — INSS, IR, plano de saúde em folha</small></div><input type="text" id="r1" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Outros ganhos mensais<small>VA, VR, comissão, freela, aluguel recebido, bônus — qualquer valor regular</small></div><input type="text" id="r2" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h">O que você paga todo mês sem poder parar <span class="sec-tag">fixos</span></div>
+    <div class="ni"><div class="nl">Moradia<small>Aluguel ou prestação do financiamento imobiliário</small></div><input type="text" id="f1" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Água, luz e gás</div><input type="text" id="f2" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Mercado e alimentação básica<small>Supermercado por necessidade — não inclua delivery aqui</small></div><input type="text" id="f3" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Transporte obrigatório<small>Combustível, prestação do carro, ônibus ou metrô mensal</small></div><input type="text" id="f4" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Dívidas com parcela fixa<small>Empréstimo, consignado, carnê, financiamento — com contrato e prazo. Não inclua fatura do cartão aqui.</small></div><input type="text" id="f5" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Outros débitos automáticos<small>Plano de saúde, escola, internet, celular — cobranças mensais que não passam pelo cartão</small></div><input type="text" id="f6" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h">O que você gasta por escolha <span class="sec-tag">variáveis</span></div>
+    <div class="ni"><div class="nl">Fatura mensal do cartão de crédito<small>Total da fatura — inclui tudo: streaming, roupas, academia, viagens, impulso. Se já contou algo nos fixos, desconte aqui.</small></div><input type="text" id="v1" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Delivery e refeições fora<small>Pedidos por aplicativo, restaurante — só se pagar em dinheiro ou PIX direto</small></div><input type="text" id="v2" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ni"><div class="nl">Outros gastos em dinheiro ou PIX<small>Presentes, farmácia extra, compras esporádicas fora do cartão</small></div><input type="text" id="v3" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h">O que você tem guardado <span class="sec-tag">patrimônio</span></div>
+    <div class="ni"><div class="nl">Quanto você investe por mês<small>CDB, Tesouro, ações, fundo, previdência</small></div><input type="text" id="p1" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    <div class="ng">
+      <div class="ni"><div class="nl">Conta corrente hoje<small>Disponível imediato</small></div><input type="text" id="p2" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+      <div class="ni"><div class="nl">Reserva de emergência<small>Guardado para imprevistos</small></div><input type="text" id="p3" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    </div>
+    <div class="ng">
+      <div class="ni"><div class="nl">Investimentos acumulados<small>CDB, Tesouro, ações, previdência</small></div><input type="text" id="p4" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+      <div class="ni"><div class="nl">Imóvel próprio<small>Valor estimado</small></div><input type="text" id="p5" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+    </div>
+    <div class="ni"><div class="nl">Veículo<small>Valor estimado</small></div><input type="text" id="p6" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
+  </div>
+
+  <button class="bp" onclick="calcular()" style="margin-top:4px">Calcular meu diagnóstico →</button>
+</div>
+
+<!-- S4: RESULTADO + DIAG IA -->
+<div class="screen" id="s4">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s3')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si now">Diagnóstico</span><span class="si-arr">→</span><span class="si">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div class="lbl">seus números</div>
+  <div id="dre-display"></div>
+  <div id="analysis-display"></div>
+  <div class="lbl" style="margin-top:6px">seu diagnóstico</div>
+  <div class="diag-box" id="diag-box">
+    <div class="diag-loading" id="diag-loading">
+      <div class="diag-spinner"></div>
+      <div class="diag-loading-txt">Analisando seu padrão financeiro...</div>
+    </div>
+    <div id="diag-content" style="display:none"></div>
+  </div>
+  <div class="pr" id="phase-display"></div>
+  <button class="bp" onclick="ir('s5')">Entender onde estou na jornada →</button>
+</div>
+
+<!-- S5: JORNADA -->
+<div class="screen" id="s5">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s4')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si now">Diagnóstico</span><span class="si-arr">→</span><span class="si">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div class="lbl">a jornada financeira</div>
+  <div style="font-size:14px;color:var(--text3);font-weight:300;margin-bottom:18px;line-height:1.6">Toda decisão financeira acontece em uma de quatro fases. Cada fase tem um foco diferente.</div>
+  <div id="journey-display"></div>
+  <button class="bp" onclick="ir('s6')">Ver meus marcadores →</button>
+</div>
+
+<!-- S6: BIOMARCADORES -->
+<div class="screen" id="s6">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s5')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si">Diagnóstico</span><span class="si-arr">→</span><span class="si now">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div class="lbl">seus marcadores</div>
+  <div class="br" id="br-folego">
+    <div class="br-top">
+      <div class="bl2"><div class="blb">Fôlego financeiro</div><div><span class="bv" id="bv1">—</span><span class="bu">meses</span></div></div>
+      <div class="bt"><div class="bf fr" id="bb1" style="width:0%"></div></div>
+    </div>
+    <div class="br-formula" id="folego-formula"></div>
+  </div>
+  <div class="br"><div class="br-top"><div class="bl2"><div class="blb">Custos fixos</div><div><span class="bv" id="bv2">—</span><span class="bu">% da renda</span></div></div><div class="bt"><div class="bf fy" id="bb2" style="width:0%"></div></div></div></div>
+  <div class="br"><div class="br-top"><div class="bl2"><div class="blb">Margem bruta</div><div><span class="bv" id="bv3">—</span><span class="bu">%</span></div></div><div class="bt"><div class="bf fg" id="bb3" style="width:0%"></div></div></div></div>
+  <div class="br"><div class="br-top"><div class="bl2"><div class="blb">Margem líquida</div><div><span class="bv" id="bv4">—</span><span class="bu">%</span></div></div><div class="bt"><div class="bf fg" id="bb4" style="width:0%"></div></div></div></div>
+  <div class="br" id="br5" style="display:none"><div class="br-top"><div class="bl2"><div class="blb">Patrimônio</div><div><span class="bv" id="bv5">—</span><span class="bu">× renda</span></div></div><div class="bt"><div class="bf fg" id="bb5" style="width:0%"></div></div></div></div>
+  <div class="bn-note" id="bnote"></div>
+  <div class="spacer"></div>
+  <button class="bp" onclick="ir('s7')" style="margin-top:16px">Ver o que os números indicam →</button>
+</div>
+
+<!-- S7: PROGNÓSTICO -->
+<div class="screen" id="s7">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s6')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si">Diagnóstico</span><span class="si-arr">→</span><span class="si now">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div id="proj-display"></div>
+  <div class="disc-txt">Mantendo tudo igual, é o que os números apontam. Qualquer mudança altera o resultado.</div>
+  <div class="spacer"></div>
+  <button class="bp" onclick="ir('s8')">Acessar meu protocolo →</button>
+</div>
+
+<!-- S8: PAYWALL -->
+<div class="screen" id="s8">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s7')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="h1" style="font-size:21px">Seu diagnóstico está pronto.<br>O próximo passo também.</div>
+  <div class="sub" style="margin-top:8px;margin-bottom:22px">O protocolo transforma números em ação. Sem ele, você sabe o problema — mas não sabe o que mudar amanhã cedo.</div>
+  <div class="pw-box">
+    <div class="lbl">o que você acessa agora — gratuitamente</div>
+    <div class="pw-val">
+      <div class="pv"><div class="pv-dot"></div><span>Protocolo personalizado para o seu padrão — não genérico</span></div>
+      <div class="pv"><div class="pv-dot"></div><span>Assistente com memória do seu perfil real</span></div>
+      <div class="pv"><div class="pv-dot"></div><span>Acompanhamento da sua jornada mês a mês</span></div>
+      <div class="pv"><div class="pv-dot"></div><span>Revisão dos seus marcadores para ver se está avançando</span></div>
+    </div>
+    <input class="ef" type="email" id="pemail" placeholder="seu@email.com">
+    <button class="bp" onclick="ativar()">Criar acesso gratuito →</button>
+  </div>
+  <div style="font-size:12px;color:var(--text3);text-align:center">Sem cobrança agora. Sem spam.</div>
+</div>
+
+<!-- S9: PROTOCOLO + ASSISTENTE IA -->
+<div class="screen" id="s9">
+  <div class="ms">O app acompanha sua evolução e lembra seus padrões a partir daqui.</div>
+  <div class="nav-row" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg width="24" height="24" viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="10" fill="#212531"/><path d="M50 12 Q57 12 62 20 L82 56 Q87 65 82 73 Q77 81 68 81 L32 81 Q23 81 18 73 Q13 65 18 56 L38 20 Q43 12 50 12Z" fill="#eb5c20"/><path d="M50 28 Q53 28 55 32 L67 54 Q69 58 67 61 Q65 64 62 64 L38 64 Q35 64 33 61 Q31 58 33 54 L45 32 Q47 28 50 28Z" fill="#212531"/></svg>
+      <span style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8e9a;font-weight:500">Risco Humano</span>
+    </div>
+    <button class="nav-restart" onclick="ir('s0')">recomeçar</button>
+  </div>
+  <div class="step-ind"><span class="si">Diagnóstico</span><span class="si-arr">→</span><span class="si">Prognóstico</span><span class="si-arr">→</span><span class="si now">Protocolo</span></div>
+  <div class="lbl">seu protocolo</div>
+  <div id="proto-content"></div>
+  <div class="div-line"></div>
+  <div class="chat-hdr">
+    <div class="chat-dot"></div>
+    <div>
+      <div class="chat-ttl">Assistente Risco Humano</div>
+      <div class="chat-sub">Baseado no seu perfil real</div>
+    </div>
+  </div>
+  <div id="assistente-display"></div>
+  <div class="ca" id="chatbox"></div>
+  <div class="cr">
+    <input class="cf" type="text" id="cin" placeholder="Faça uma pergunta..." onkeypress="if(event.key==='Enter')enviar()">
+    <button class="sb" id="send-btn" onclick="enviar()">↑</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ─── ESTADO GLOBAL ────────────────────────────────────────────────────────────
+const D = {
+  entrada:'', resps:[], caminho:'', fase:'',
+  receita:0, fixos:0, variaveis:0, inv:0, saldo:0, reserva:0, patrimonio:0,
+  mb:0, ml:0, folego:0, compF:0, pr:0, lb:0, ll:0,
+  otimizavel:0, otFatura:0, otDelivery:0,
+  gastos:{}, f:{}, v:{},
+  diagTexto:'', contextoChat:''
+};
+
+// ─── INTAKE COM PERGUNTAS COMPORTAMENTAIS ─────────────────────────────────────
+const QS = [
+  {t:'Qual sua renda mensal líquida?', o:[
+    {t:'Até R$3.000', e:'Some tudo que entra: salário, VA/VR, bico, qualquer valor regular'},
+    {t:'R$3.000 a R$6.000', e:'Some todas as fontes — salário, VA/VR, comissão, freela'},
+    {t:'R$6.000 a R$10.000', e:'Considere a média dos últimos 3 meses se a renda variar'},
+    {t:'Acima de R$10.000', e:'Inclua bônus e comissão se forem recorrentes'}
+  ]},
+  {t:'Como chega sua renda?', o:[
+    {t:'Uma fonte fixa todo mês', e:'CLT, servidor público, aposentadoria'},
+    {t:'Mais de uma fonte', e:'CLT + freela, salário + aluguel recebido, CLT + comissão'},
+    {t:'Varia bastante mês a mês', e:'Comissão pura, autônomo, PJ sem contrato fixo'}
+  ]},
+  {t:'O que mais pesa no seu orçamento?', o:[
+    {t:'Parcelas e contas que não param', e:'Aluguel alto, financiamento, carnê, dívida com parcela fixa'},
+    {t:'Gastos que acontecem mas não controlo bem', e:'Sei que faço, mas não tenho um plano para organizar melhor'},
+    {t:'Dívida que está crescendo ou não diminui', e:'Cartão no rotativo, empréstimo com juros altos'},
+    {t:'Nada pesa muito — quero otimizar o que tenho', e:'Estou bem, sem dívidas, mas quero entender onde posso melhorar'}
+  ]},
+  {t:'Você tem reserva de emergência?', o:[
+    {t:'Sim, me sinto seguro', e:'Tenho pelo menos 3 meses de gastos guardados'},
+    {t:'Tenho algo, mas é pouco', e:'Guardei alguma coisa, mas não me sinto protegido contra um imprevisto grande'},
+    {t:'Não tenho nada guardado', e:'Se parar de trabalhar ou aparecer um gasto grande, o mês não fecha'},
+    {t:'Toda vez que formo, acabo usando', e:'A reserva cresce, mas sempre aparece algo que precisa dela antes de chegar ao objetivo'}
+  ]},
+  {t:'Quando sobra dinheiro no começo do mês, o que normalmente acontece?', o:[
+    {t:'Separo antes de gastar — vai direto pro investimento', e:'Automatizo ou faço a transferência logo no dia do salário'},
+    {t:'Fico com a intenção de guardar, mas acaba sendo usado', e:'A vida vai pedindo e no fim do mês não sobrou o que eu esperava'},
+    {t:'Não costuma sobrar — o mês vai consumindo tudo', e:'Não há um momento claro de "sobrou"'},
+    {t:'Guardo parte, mas sem um destino específico', e:'Cai numa conta, fica lá, mas não sei bem o que é pra quê'}
+  ]},
+  {t:'Tem algum gasto que você sabe que poderia cortar — mas não cortou ainda?', o:[
+    {t:'Sim, sei exatamente qual é', e:'Tenho clareza do gasto, mas algo me impede de agir'},
+    {t:'Tenho suspeita, mas não tenho certeza', e:'Acho que tem algo, mas nunca parei pra calcular direito'},
+    {t:'Não tenho consciência de nenhum gasto assim', e:'Do meu ponto de vista, os gastos fazem sentido'},
+    {t:'Já cortei o que era pra cortar', e:'Fiz esse trabalho antes — está razoavelmente ajustado'}
+  ]}
+];
+
+let qIdx = 0;
+function ir(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function fmt(el){let v=el.value.replace(/\D/g,'');if(!v){el.value='';return}el.value='R$ '+parseInt(v,10).toLocaleString('pt-BR')}
+function gn(id){const el=document.getElementById(id);if(!el)return 0;const v=el.value.replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.');return parseFloat(v)||0}
+function fmtR(v){return'R$'+Math.round(Math.abs(v)).toLocaleString('pt-BR')}
+function entrada(v){D.entrada=v;qIdx=0;D.resps=[];renderQ();ir('s1')}
+function renderProg(){const el=document.getElementById('prog');el.innerHTML='';for(let i=0;i<6;i++){const d=document.createElement('div');d.className='ps'+(i===qIdx?' a':i<qIdx?' d':'');el.appendChild(d)}}
+function renderQ(){
+  const q=QS[qIdx];
+  document.getElementById('qnum').textContent=`0${qIdx+1} / 06`;
+  document.getElementById('qtxt').textContent=q.t;
+  const el=document.getElementById('qopts');el.innerHTML='';
+  q.o.forEach((o,i)=>{const b=document.createElement('button');b.className='cb';b.innerHTML=`${o.t}<span class="ex">${o.e}</span>`;b.onclick=()=>resp(i);el.appendChild(b)});
+  renderProg();
+}
+function resp(i){D.resps.push(i);if(qIdx<5){qIdx++;renderQ()}else{ir('s2');setTimeout(()=>ir('s3'),2200)}}
+
+// ─── CÁLCULO ──────────────────────────────────────────────────────────────────
+function calcular(){
+  const r1=gn('r1'),r2=gn('r2');
+  if(!r1){alert('Preencha pelo menos o salário mensal.');return}
+  const f1=gn('f1'),f2=gn('f2'),f3=gn('f3'),f4=gn('f4'),f5=gn('f5'),f6=gn('f6');
+  const v1=gn('v1'),v2=gn('v2'),v3=gn('v3');
+  const p1=gn('p1'),p2=gn('p2'),p3=gn('p3'),p4=gn('p4'),p5=gn('p5'),p6=gn('p6');
+
+  const receita=r1+r2, fixos=f1+f2+f3+f4+f5+f6, variaveis=v1+v2+v3, inv=p1;
+  const saldo=p2, reserva=p3, patrimonio=p4+p5+p6;
+  const lb=receita-fixos, ll=lb-variaveis-inv;
+  const mb=receita>0?Math.round((lb/receita)*100):0;
+  const ml=receita>0?Math.round((ll/receita)*100):0;
+  const compF=receita>0?Math.min(Math.round((fixos/receita)*100),100):0;
+  const disp=saldo+reserva, gastoM=fixos+variaveis;
+  const folego=gastoM>0&&disp>0?Math.round((disp/gastoM)*10)/10:0;
+  const pr=receita>0?Math.round((patrimonio/receita)*10)/10:0;
+  const otFatura=Math.round(v1*0.20), otDelivery=Math.round(v2*0.30);
+  const otimizavel=otFatura+otDelivery;
+
+  Object.assign(D,{receita,fixos,variaveis,inv,saldo,reserva,patrimonio,mb,ml,compF,folego,pr,lb,ll,otimizavel,otFatura,otDelivery});
+  D.f={f1,f2,f3,f4,f5,f6}; D.v={v1,v2,v3};
+  D.gastos={'Moradia':f1,'Água/Luz/Gás':f2,'Mercado':f3,'Transp. fixo':f4,'Dívidas':f5,'Outros fixos':f6,'Fatura cartão':v1,'Delivery':v2,'Outros variáveis':v3,'Investimento':inv};
+
+  // Fase baseada nos números
+  if(compF>=70||mb<20) D.fase='Proteção';
+  else if(pr>=10&&ml>=10&&folego>=3) D.fase='Decisão';
+  else if(pr>=15&&ml>=10) D.fase='Opcionalidade';
+  else D.fase='Margem';
+
+  renderDRE(); renderAnalysis(); renderFasePills();
+  renderJourney(); renderBio(); renderProj(); renderProto();
+
+  ir('s4');
+  // Chama IA para diagnóstico
+  chamarDiagnostico();
+}
+
+// ─── CHAMADA API ──────────────────────────────────────────────────────────────
+async function chamarAPI(payload) {
+  const res = await fetch('/api/diagnostico', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  return data.diagnostico || '';
+}
+
+async function chamarDiagnostico(){
+  const loading = document.getElementById('diag-loading');
+  const content = document.getElementById('diag-content');
+  loading.style.display='flex'; content.style.display='none';
+
+  // Monta respostas do intake em texto
+  const respostasTexto = QS.map((q,i)=>`${q.t}\nR: ${q.o[D.resps[i]]?.t||'—'}`).join('\n\n');
+
+  try {
+    const texto = await chamarAPI({
+      tipo: 'diagnostico',
+      dados: {
+        receita: D.receita, fixos: D.fixos, variaveis: D.variaveis, inv: D.inv,
+        mb: D.mb, ml: D.ml, compF: D.compF, folego: D.folego,
+        patrimonio: D.patrimonio, pr: D.pr, gastos: D.gastos,
+        respostas: respostasTexto
+      }
+    });
+
+    D.diagTexto = texto;
+    D.contextoChat = buildContexto();
+
+    loading.style.display='none';
+    content.style.display='block';
+    content.innerHTML = formatarDiag(texto);
+
+    // Inicializa chat com contexto
+    initChat();
+  } catch(e) {
+    loading.style.display='none';
+    content.style.display='block';
+    content.innerHTML = `<div class="diag-error">Não foi possível conectar com o assistente. Verifique sua conexão.</div>`;
+  }
+}
+
+function buildContexto(){
+  return `Perfil: renda ${fmtR(D.receita)}/mês, custos fixos ${D.compF}% da renda, margem bruta ${D.mb}%, margem líquida ${D.ml}%, fôlego ${D.folego} meses, patrimônio ${fmtR(D.patrimonio)}, fase: ${D.fase}. Diagnóstico: ${D.diagTexto}`;
+}
+
+function formatarDiag(texto){
+  // Primeiro parágrafo = título
+  const linhas = texto.split('\n').filter(l=>l.trim());
+  if(!linhas.length) return `<div class="diag-body">${texto}</div>`;
+  const titulo = linhas[0];
+  const resto = linhas.slice(1).join('\n\n');
+  // Formata itálico
+  const body = resto.replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/_([^_]+)_/g,'<em>$1</em>');
+  return `<div class="diag-title">${titulo}</div><div class="diag-body">${body}</div>`;
+}
+
+function tog(id,txt){const el=document.getElementById(id),t=document.getElementById('t'+id);const open=el.classList.toggle('open');if(t)t.textContent=open?'− fechar':'+ '+txt}
+
+// ─── DRE COLAPSÁVEL ───────────────────────────────────────────────────────────
+function renderDRE(){
+  const{receita,fixos,variaveis,inv,lb,ll,mb,ml}=D;
+  const{f1,f2,f3,f4,f5,f6}=D.f; const{v1,v2,v3}=D.v; const r2=gn('r2');
+  let h='';
+  h+=dreB('Total que entra todo mês',`Salário${r2>0?' + outros ganhos':''}`,receita,'ora',
+    [['Salário líquido',D.receita-r2],r2>0?['Outros ganhos',r2]:null],'dr1','detalhes','','');
+  const mbCls=mb<20?'bl-neg':mb<40?'bl-ora':'bl-pos';
+  h+=dreB('O que sobra depois dos fixos','Receita menos compromissos obrigatórios',lb,lb>=0?'pos':'neg',
+    [f1>0?['Moradia',f1,true]:null,f2>0?['Água/Luz/Gás',f2,true]:null,f3>0?['Mercado',f3,true]:null,
+     f4>0?['Transporte',f4,true]:null,f5>0?['Dívidas',f5,true]:null,f6>0?['Outros fixos',f6,true]:null],
+    'dr2','ver fixos',mb+'%',mbCls);
+  if(variaveis>0||inv>0){
+    const mlCls=ml<5?'bl-neg':ml<15?'bl-ora':'bl-pos';
+    h+=dreB('O que sobra no fim do mês','Depois de tudo — fixos, escolhas e investimentos',ll,ll>=0?'pos':'neg',
+      [v1>0?['Fatura do cartão',v1,true]:null,v2>0?['Delivery',v2,true]:null,
+       v3>0?['Outros variáveis',v3,true]:null,inv>0?['Investimento mensal',inv,true]:null],
+      'dr3','ver variáveis',ml+'%',mlCls);
+  }
+  document.getElementById('dre-display').innerHTML=h;
+}
+function dreB(lbl,sub,val,valCls,rows,id,togTxt,pct,borderCls){
+  const rhtml=(rows||[]).filter(Boolean).map(r=>`<div class="dre-row"><span class="dl">${r[0]}</span><span class="dv">${r[2]?'−':''}${fmtR(r[1])}</span></div>`).join('');
+  const pctHtml=pct?`<span class="dre-pct">${pct}</span>`:'';
+  return`<div class="dre-wrap"><div class="dre-sum ${borderCls}" onclick="tog('${id}','${togTxt}')"><div class="dre-sl"><div class="dre-slbl">${lbl}</div><div class="dre-ssub">${sub}</div></div><div class="dre-sr">${pctHtml}<span class="dre-val ${valCls}">${val<0?'−':''}${fmtR(val)}</span><span class="dre-tog" id="t${id}">+ ${togTxt}</span></div></div><div class="dre-det" id="${id}">${rhtml}</div></div>`;
+}
+
+// ─── ANÁLISE TOP 5 ────────────────────────────────────────────────────────────
+function renderAnalysis(){
+  const{gastos,receita,f,v}=D;
+  const itens=Object.entries(gastos).filter(([k,val])=>val>0&&k!=='Investimento').sort((a,b)=>b[1]-a[1]);
+  if(!itens.length){document.getElementById('analysis-display').innerHTML='';return}
+  const top=itens.slice(0,5); const max=top[0][1];
+  let h=`<div class="analysis"><div class="ah">onde vai o dinheiro — top ${top.length}</div>`;
+  top.forEach(([k,val],i)=>{const pct=Math.round((val/receita)*100);const w=Math.round((val/max)*100);h+=`<div class="ri"><div class="rn">${i+1}</div><div class="rl2">${k}</div><div class="rbw"><div class="rb" style="width:${w}%"></div></div><div class="rv">${fmtR(val)}<span class="rp">${pct}%</span></div></div>`});
+  const temDivida=(f.f5||0)>0; const ctrl=(v.v1||0)+(v.v2||0);
+  let insight='';
+  if(temDivida)insight=`<b>Ponto de atenção:</b> Você tem dívida ativa. Os juros cobram mesmo quando você não age.`;
+  else if(ctrl>0){const pct=Math.round((ctrl/receita)*100);insight=`Fatura do cartão e delivery somam <b>${fmtR(ctrl)}/mês — ${pct}% da renda</b>. Aqui costuma estar o maior espaço de ajuste imediato.`}
+  else insight=`Seu maior gasto é <b>${top[0][0]}</b>. Repetido por 12 meses: <b>${fmtR(top[0][1]*12)}</b>.`;
+  h+=`<div class="ins" style="background:var(--ol);border:1px solid rgba(235,92,32,0.15);border-radius:6px;padding:11px 13px;margin-top:10px;font-size:13px;color:var(--text2);line-height:1.6;font-weight:300">${insight}</div></div>`;
+  document.getElementById('analysis-display').innerHTML=h;
+}
+
+// ─── FASE PILLS ───────────────────────────────────────────────────────────────
+function renderFasePills(){
+  const fases=['Proteção','Margem','Decisão','Opcionalidade'];
+  const idx=fases.indexOf(D.fase);
+  let ph=''; fases.forEach((f,i)=>{if(i>0)ph+=`<div class="pa">→</div>`;ph+=`<div class="pp${i===idx?' n':''}">${f}</div>`});
+  document.getElementById('phase-display').innerHTML=ph;
+}
+
+// ─── JORNADA ──────────────────────────────────────────────────────────────────
+function renderJourney(){
+  const fases=[
+    {nome:'Proteção',cor:'#c0392b',desc:'Foco em não piorar. Criar o mínimo de segurança: parar de sangrar, construir fôlego, sair do modo de sobrevivência.'},
+    {nome:'Margem',cor:'#eb5c20',desc:'Você tem folga, mas ela some. O trabalho é dar destino intencional ao que sobra — reserva, investimento, objetivos.'},
+    {nome:'Decisão',cor:'#2d7a5a',desc:'Você tem base. O foco é fazer escolhas mais inteligentes — alocação, alavanca, velocidade de crescimento.'},
+    {nome:'Opcionalidade',cor:'#1a6b8a',desc:'Você tem escolha real: pode mudar de carreira, assumir um risco calculado, viver com mais liberdade.'}
+  ];
+  let h=''; fases.forEach(f=>{const atual=f.nome===D.fase;h+=`<div class="jc" style="${atual?'border-color:var(--orange);border-left:3px solid var(--orange)':''}"><div class="jph"><div class="jdot" style="background:${f.cor}${atual?';box-shadow:0 0 0 3px rgba(235,92,32,0.15)':''}"></div><div><div class="jtit" style="${atual?'color:var(--orange)':''}">${f.nome}${atual?' ← você está aqui':''}</div><div class="jdesc">${f.desc}</div></div></div></div>`});
+  document.getElementById('journey-display').innerHTML=h;
+}
+
+// ─── BIOMARCADORES ────────────────────────────────────────────────────────────
+function renderBio(){
+  const{folego,compF,mb,ml,pr,saldo,reserva,fixos,variaveis}=D;
+  const disp=saldo+reserva, gastoM=fixos+variaveis;
+  document.getElementById('bv1').textContent=folego||'—';
+  const fEl=document.getElementById('folego-formula');
+  if(fEl){
+    if(disp>0&&gastoM>0){
+      const status=folego<1?'🔴 Crítico':folego<3?'⚠ Abaixo do mínimo (3 meses)':folego<6?'→ Razoável — ideal é 6 meses':'✓ Sólido';
+      fEl.innerHTML=`<b>${fmtR(disp)}</b> disponível ÷ <b>${fmtR(gastoM)}</b>/mês = <b>${folego} ${folego===1?'mês':'meses'}</b> &nbsp;·&nbsp; ${status}`;
+    }else fEl.textContent='Preencha conta corrente e reserva para calcular.';
+  }
+  document.getElementById('bv2').textContent=compF;
+  document.getElementById('bv3').textContent=mb;
+  document.getElementById('bv4').textContent=ml;
+  setTimeout(()=>{
+    sb2('bb1',Math.min(100,(folego/12)*100),folego<1?'fr':folego<3?'fy':'fg');
+    sb2('bb2',Math.min(100,compF),compF>70?'fr':compF>55?'fy':'fg');
+    sb2('bb3',Math.min(100,Math.max(0,mb)),mb<20?'fr':mb<40?'fy':'fg');
+    sb2('bb4',Math.min(100,Math.max(0,ml)),ml<5?'fr':ml<15?'fy':'fg');
+  },200);
+  if(pr>0){document.getElementById('br5').style.display='';document.getElementById('bv5').textContent=pr;setTimeout(()=>sb2('bb5',Math.min(100,(pr/24)*100),'fg'),200)}
+  let nota='';
+  if(folego===0&&disp===0)nota='Preencha conta corrente e reserva para calcular o fôlego real.';
+  else if(folego<1)nota='Menos de 1 mês de fôlego — qualquer imprevisto compromete tudo.';
+  else if(folego<3)nota=`${folego} ${folego===1?'mês':'meses'} de fôlego — abaixo do mínimo de 3 meses.`;
+  else if(ml>25)nota=`Margem líquida de ${ml}%: você tem espaço. A questão é se está recebendo destino intencional.`;
+  else if(pr>=6)nota=`Patrimônio de ${pr}× a renda. Você tem base. O foco agora é velocidade e alocação.`;
+  else nota=`${compF}% da renda já tem destino fixo antes de qualquer escolha. Margem bruta: ${mb}%. Margem líquida: ${ml}%.`;
+  document.getElementById('bnote').textContent=nota;
+}
+function sb2(id,w,cls){const el=document.getElementById(id);if(el){el.style.width=w+'%';el.className='bf '+cls}}
+
+// ─── PROGNÓSTICO ──────────────────────────────────────────────────────────────
+function renderProj(){
+  const{receita,fixos,variaveis,inv,mb,ml,compF,folego,patrimonio,pr,fase,otimizavel,otFatura,otDelivery,ll,saldo,reserva}=D;
+  const{v1,v2}=D.v; const temDivida=(D.f.f5||0)>0;
+  const mlV=Math.max(0,ll);
+  const cartoDelivTotal=(v1||0)+(v2||0);
+  const gastoM=fixos+variaveis;
+  let h='';
+
+  const caminho = fase==='Proteção'?'A':fase==='Opcionalidade'||fase==='Decisão'?'C':'B';
+
+  if(caminho==='A'){
+    h=`<div class="prog-section">
+      <div class="prog-lbl r">O gargalo — onde o dinheiro já tem dono</div>
+      <div class="bn-card ar">
+        <div class="bn-top">
+          <div class="bn-label"><b>${compF}% da renda</b> vai para custos fixos antes de qualquer escolha</div>
+          <div class="bn-number"><div class="bn-value red">${fmtR(fixos)}</div><div class="bn-unit">por mês</div></div>
+        </div>
+        <div class="bn-bar-row"><div class="bn-bar-bg"><div class="bn-bar-fill" style="width:${Math.min(100,compF)}%;background:var(--red)"></div></div><div class="bn-bar-pct">${compF}%</div></div>
+        <div class="bn-note2">Em 12 meses: <b>${fmtR(fixos*12)}</b> comprometidos em custos fixos.${temDivida?' Dívida ativa inclusa — os juros correm mesmo quando você não age.':''}</div>
+      </div>
+    </div>
+    <div class="prog-section">
+      <div class="prog-lbl g">O ganho possível — com uma decisão</div>
+      <div class="bn-card ag">
+        <div class="bn-top">
+          <div class="bn-label">${temDivida?'Quitando a dívida de maior juros, você para de perder antes de começar a ganhar':'Renegociando o maior custo fixo possível, você libera margem imediatamente'}</div>
+          <div class="bn-number"><div class="bn-value green">${fmtR(gastoM*3)}</div><div class="bn-unit">meta de fôlego (3 meses)</div></div>
+        </div>
+        <div class="bn-note2">${mlV>0?`Com margem líquida de ${fmtR(mlV)}/mês, você chegaria lá em <b>${Math.ceil((gastoM*3)/Math.max(1,mlV))} meses</b>.`:'Para chegar lá, é preciso liberar margem primeiro.'}</div>
+      </div>
+    </div>`;
+  } else if(caminho==='C'){
+    const acum12=mlV*12; const acumOt=(mlV+otimizavel)*12;
+    h=`<div class="prog-section">
+      <div class="prog-lbl n">Seu padrão atual — projeção em 12 meses</div>
+      <div class="bn-card ao">
+        <div class="bn-top">
+          <div class="bn-label">Você investe <b>${fmtR(inv)}/mês</b> e tem margem líquida de <b>${ml}%</b>.</div>
+          <div class="bn-number"><div class="bn-value orange">${fmtR(acum12)}</div><div class="bn-unit">acumulados em 12 meses</div></div>
+        </div>
+        <div class="bn-note2">${patrimonio>0?`Patrimônio atual de <b>${fmtR(patrimonio)}</b>. Está todo alocado de forma eficiente?`:''}</div>
+      </div>
+    </div>
+    ${otimizavel>0?`<div class="prog-section">
+      <div class="prog-lbl g">Com ajuste de alocação identificado</div>
+      <div class="bn-card ag">
+        <div class="bn-top">
+          <div class="bn-label">Redirecionando <b>${fmtR(otimizavel)}/mês</b> dos gastos controláveis</div>
+          <div class="bn-number"><div class="bn-value green">${fmtR(acumOt)}</div><div class="bn-unit">acumulados em 12 meses</div></div>
+        </div>
+        <div class="bn-note2">Diferença de <b>${fmtR(acumOt-acum12)}</b> em 12 meses com o mesmo esforço.</div>
+      </div>
+      <div class="calc-src">Como chegamos em ${fmtR(otimizavel)}/mês:${otFatura>0?` Fatura ${fmtR(v1)} × 20% = ${fmtR(otFatura)}`:''}${otDelivery>0?` · Delivery ${fmtR(v2)} × 30% = ${fmtR(otDelivery)}`:''}. Estimativa conservadora.</div>
+    </div>`:''}`;
+  } else {
+    const estaBem=ml>15&&folego>=3;
+    const acum12=mlV*12; const acumOt=(mlV+otimizavel)*12;
+    const flowItens=[
+      fixos>0?{l:'Custos fixos',v:fixos,p:compF,c:'rgba(26,29,38,0.25)'}:null,
+      (v1||0)>0?{l:'Fatura cartão',v:v1,p:Math.round((v1/receita)*100),c:'var(--orange)'}:null,
+      (v2||0)>0?{l:'Delivery',v:v2,p:Math.round((v2/receita)*100),c:'var(--orange)'}:null,
+      inv>0?{l:'Investimento',v:inv,p:Math.round((inv/receita)*100),c:'var(--green)'}:null,
+      {l:'O que sobra',v:Math.max(0,ll),p:Math.max(0,ml),c:ll>0?'var(--green)':'var(--red)',hl:true},
+    ].filter(Boolean);
+    let fHtml=`<div class="flow-visual"><div class="flow-title">para onde vai a renda — ${fmtR(receita)}/mês</div>`;
+    flowItens.forEach(it=>{fHtml+=`<div class="flow-row"><div class="flow-lbl" style="${it.hl?'font-weight:500;color:var(--text)':''}">${it.l}</div><div class="flow-bw"><div class="flow-b" style="width:${Math.max(2,it.p)}%;background:${it.c}"></div></div><div class="flow-v">${fmtR(it.v)}</div><div class="flow-p">${it.p}%</div></div>`});
+    const garItems=[(v1||0)>0?{n:'Fatura cartão',v:v1,p:Math.round((v1/receita)*100)}:null,(v2||0)>0?{n:'Delivery',v:v2,p:Math.round((v2/receita)*100)}:null].filter(Boolean).sort((a,b)=>b.v-a.v);
+    if(garItems.length>0) fHtml+=`<div class="flow-div"></div><div class="flow-ins">Maior gargalo: <b>${garItems[0].n}</b> — <b>${fmtR(garItems[0].v)}/mês (${garItems[0].p}% da renda)</b>.</div>`;
+    fHtml+='</div>';
+    h=`<div class="prog-section"><div class="prog-lbl n">Onde está o dinheiro hoje</div>${fHtml}</div>
+    <div class="prog-section">
+      <div class="prog-lbl ${estaBem?'n':'r'}">${estaBem?'O que os números mostram':'Se o padrão continuar — 12 meses'}</div>
+      <div class="bn-card ${estaBem?'ao':'ar'}">
+        <div class="bn-top">
+          <div class="bn-label">${estaBem?`Você gasta <b>${fmtR(cartoDelivTotal)}/mês</b> em fatura e delivery. Isso não é um problema.`:`<b>${fmtR(cartoDelivTotal)}/mês</b> em fatura e delivery — ${Math.round((cartoDelivTotal/receita)*100)}% da renda`}</div>
+          <div class="bn-number"><div class="bn-value ${estaBem?'orange':'red'}">${fmtR(cartoDelivTotal*12)}</div><div class="bn-unit">em 12 meses</div></div>
+        </div>
+        <div class="bn-note2">${estaBem?`A pergunta real: <b>esse valor reflete suas prioridades?</b>`:`Padrão atual acumula ${fmtR(Math.max(0,acum12))} em 12 meses.`}</div>
+      </div>
+    </div>
+    ${otimizavel>0?`<div class="prog-section">
+      <div class="prog-lbl g">Com uma decisão de direção</div>
+      <div class="bn-card ag">
+        <div class="bn-top">
+          <div class="bn-label">Redirecionando <b>${fmtR(otimizavel)}/mês</b> dos gastos controláveis</div>
+          <div class="bn-number"><div class="bn-value green">${fmtR(acumOt)}</div><div class="bn-unit">acumulados em 12 meses</div></div>
+        </div>
+        <div class="bn-note2">A diferença não é disciplina — é <b>ter um destino antes do dinheiro sair</b>.</div>
+      </div>
+      <div class="calc-src">Como chegamos em ${fmtR(otimizavel)}/mês:${otFatura>0?` Fatura ${fmtR(v1)} × 20% = ${fmtR(otFatura)}`:''}${otDelivery>0?` · Delivery ${fmtR(v2)} × 30% = ${fmtR(otDelivery)}`:''}. Estimativa conservadora.</div>
+    </div>`:''}`;
+  }
+  document.getElementById('proj-display').innerHTML=h;
+}
+
+// ─── PROTOCOLO ────────────────────────────────────────────────────────────────
+function renderProto(){
+  const{fase,compF,mb,ml,folego,receita,patrimonio,pr,otimizavel,otFatura,otDelivery}=D;
+  const{v1,v2}=D.v; const temDivida=(D.f.f5||0)>0; const ctrl=(v1||0)+(v2||0);
+  let h='';
+  if(fase==='Proteção'){
+    h=`<div class="tb"><div class="tl">3 coisas para parar de fazer agora</div>
+    <div class="ti">Não assumir nenhum novo compromisso fixo pelos próximos 90 dias</div>
+    <div class="ti">Não usar o cartão em rotativo — é o custo financeiro mais alto que existe</div>
+    <div class="ti">Não parcelar nada novo sem calcular o impacto nos próximos 3 meses</div></div>
+    <div class="tb"><div class="tl">Por onde começar hoje</div>
+    <div class="tt">${temDivida?'Você tem dívida ativa. Prioridade: quitar a de maior juros antes de qualquer outra coisa — inclusive antes de investir.':'Com '+compF+'% da renda comprometida, mapeie qual custo fixo tem mais espaço para renegociação.'}</div></div>`;
+  } else if(fase==='Decisão'||fase==='Opcionalidade'){
+    h=`<div class="tb"><div class="tl">As perguntas que definem seu próximo passo</div>
+    <div class="ti">Do patrimônio de ${fmtR(patrimonio)}, quanto está em ativos que rendem acima da inflação?</div>
+    <div class="ti">Os ${compF}% de custo fixo têm espaço para cair — ou são estruturais?</div>
+    <div class="ti">O que muda mais sua velocidade: mais renda, melhor alocação, ou menos compromisso?</div></div>`;
+  } else {
+    const texto=ctrl>0?`Fatura e delivery somam ${fmtR(ctrl)}/mês — ${Math.round((ctrl/receita)*100)}% da renda.`:'O primeiro passo é dar um destino fixo para a margem antes do mês começar.';
+    h=`<div class="tb"><div class="tl">O que fazer nos próximos 30 dias</div>
+    ${ctrl>0?`<div class="ti-math">${texto}${otimizavel>0?` Redução conservadora: ${otFatura>0?`fatura × 20% = ${fmtR(otFatura)}`:''}${otDelivery>0?` + delivery × 30% = ${fmtR(otDelivery)}`:''}. Total: ${fmtR(otimizavel)}/mês.`:''}</div>`:''}
+    <div class="ti">Separar um valor fixo no dia do pagamento — antes de qualquer outro gasto</div>
+    <div class="ti">${temDivida?'Listar todas as dívidas por taxa de juros e atacar a mais cara primeiro':'Revisar uma assinatura que pode ser cancelada hoje'}</div></div>`;
+  }
+  document.getElementById('proto-content').innerHTML=h;
+}
+
+// ─── ASSISTENTE ───────────────────────────────────────────────────────────────
+function initChat(){
+  const temDivida=(D.f.f5||0)>0;
+  const margemOk=D.ml>=15; const folegoOk=D.folego>=3; const patOk=D.pr>=6;
+  const varConsomeMargem=D.mb>=40&&D.ml<15;
+  let h='';
+  if(temDivida)h+=`<div class="alert-box"><div class="alert-lbl">ponto de atenção</div><div class="alert-txt">Você tem dívida com parcela fixa. Os juros consomem sua margem. Prioridade: quitar a de maior custo antes de qualquer outra movimentação.</div></div>`;
+  if(!folegoOk&&D.folego>0)h+=`<div class="alert-box"><div class="alert-lbl">fôlego abaixo do mínimo</div><div class="alert-txt">${D.folego} ${D.folego===1?'mês':'meses'} de fôlego — abaixo dos 3 meses mínimos recomendados.</div></div>`;
+  if(varConsomeMargem)h+=`<div class="alert-box"><div class="alert-lbl">variáveis consumindo a margem</div><div class="alert-txt">Margem bruta de ${D.mb}% — estrutura razoável. Mas os gastos variáveis estão consumindo quase tudo que sobra.</div></div>`;
+  if(margemOk)h+=`<div class="hi-box"><div class="hi-lbl">oportunidade</div><div class="hi-txt">Margem líquida de ${D.ml}% — você tem espaço. A questão é se está recebendo destino intencional.</div></div>`;
+  if(patOk)h+=`<div class="hi-box"><div class="hi-lbl">patrimônio construído</div><div class="hi-txt">Patrimônio de ${D.pr}× a renda. Você tem base. O foco agora é velocidade e alocação.</div></div>`;
+  h+=`<div class="info-box"><div class="info-lbl">seu perfil em resumo</div><div class="info-txt"><b>Fase: ${D.fase}</b><br>Renda ${fmtR(D.receita)}/mês · Margem bruta ${D.mb}% · Margem líquida ${D.ml}% · Fôlego ${D.folego>0?D.folego+(D.folego===1?' mês':' meses'):'não informado'}${D.patrimonio>0?' · Patrimônio '+fmtR(D.patrimonio):''}</div></div>`;
+  document.getElementById('assistente-display').innerHTML=h;
+
+  const cb=document.getElementById('chatbox');cb.innerHTML='';
+  addMsg('ai','Seu diagnóstico está pronto. Pode me perguntar qualquer coisa sobre sua situação financeira — vou responder com base no seu perfil real.');
+}
+
+function addMsg(tipo,txt){
+  const w=document.getElementById('chatbox');
+  const m=document.createElement('div');m.className=`mg ${tipo}`;m.textContent=txt;w.appendChild(m);
+  w.scrollTop=w.scrollHeight;
+  return m;
+}
+
+async function enviar(){
+  const el=document.getElementById('cin'); const t=el.value.trim(); if(!t)return;
+  el.value='';
+  const btn=document.getElementById('send-btn'); btn.disabled=true;
+  addMsg('us',t);
+  const loading=addMsg('loading','digitando...');
+  try {
+    const resp=await chamarAPI({
+      tipo:'chat',
+      dados:{pergunta:t, contexto:D.contextoChat||buildContexto()}
+    });
+    document.getElementById('chatbox').removeChild(loading);
+    addMsg('ai',resp);
+  } catch(e){
+    document.getElementById('chatbox').removeChild(loading);
+    addMsg('ai','Não foi possível conectar. Tente novamente.');
+  }
+  btn.disabled=false;
+  el.focus();
+}
+
+function ativar(){const e=document.getElementById('pemail').value;if(!e||!e.includes('@')){alert('Digite um email válido.');return}D.email=e;ir('s9')}
+</script>
+</body>
+</html>
