@@ -860,7 +860,28 @@ async function enviar(){
   el.focus();
 }
 
-function ativar(){const e=document.getElementById('pemail').value;if(!e||!e.includes('@')){alert('Digite um email válido.');return}D.email=e;ir('s9')}
+async function ativar(){
+  const e=document.getElementById('pemail').value;
+  if(!e||!e.includes('@')){alert('Digite um email válido.');return}
+  D.email=e;
+  // Envia para Formspree
+  try{
+    await fetch('https://formspree.io/f/meepywdz',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        email:e,
+        diagnostico:D.diagTexto||'',
+        fase:D.fase||'',
+        renda:D.receita||0,
+        margem_liquida:D.ml||0,
+        folego:D.folego||0,
+        patrimonio:D.patrimonio||0
+      })
+    });
+  }catch(err){console.log('Formspree error:',err)}
+  ir('s9');
+}
 </script>
 </body>
 </html>
