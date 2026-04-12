@@ -241,6 +241,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="cb" onclick="entrada('A')">Nunca sobra nada<span class="ex">O salário some antes do fim do mês. Às vezes preciso do cartão ou de ajuda para fechar.</span></button>
   <button class="cb" onclick="entrada('B')">Sobra, mas some<span class="ex">Tem dinheiro no começo do mês. No fim, sumiu. Não virou reserva nem investimento.</span></button>
   <button class="cb" onclick="entrada('C')">Estou bem, quero ir mais rápido<span class="ex">Tenho reserva, invisto, não devo. Mas sinto que poderia avançar muito mais.</span></button>
+  <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:24px;line-height:1.6">Seus dados ficam apenas no seu dispositivo — nunca são armazenados em servidor.</div>
+</div>
+
+<!-- S0B: NOME E IDADE -->
+<div class="screen" id="s0b">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="10" fill="#212531"/><path d="M50 12 Q57 12 62 20 L82 56 Q87 65 82 73 Q77 81 68 81 L32 81 Q23 81 18 73 Q13 65 18 56 L38 20 Q43 12 50 12Z" fill="#eb5c20"/><path d="M50 28 Q53 28 55 32 L67 54 Q69 58 67 61 Q65 64 62 64 L38 64 Q35 64 33 61 Q31 58 33 54 L45 32 Q47 28 50 28Z" fill="#212531"/></svg>
+    <span style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8e9a;font-weight:500">Risco Humano</span>
+  </div>
+  <div class="h1" style="font-size:22px">Antes de começar, duas perguntas rápidas.</div>
+  <div class="sub" style="margin-bottom:28px">Idade e nome mudam o diagnóstico. 25 anos com patrimônio zero é uma situação. 45 anos é outra completamente diferente.</div>
+  <div class="ni" style="margin-bottom:14px">
+    <div class="nl">Seu nome<small>Como você quer ser chamado durante o diagnóstico</small></div>
+    <input type="text" id="inp-nome" placeholder="Nome" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:300;padding:12px 14px;width:100%;border-radius:6px;outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(26,29,38,0.1)'">
+  </div>
+  <div class="ni" style="margin-bottom:28px">
+    <div class="nl">Sua idade<small>Usada para calibrar horizonte de tempo e urgência do diagnóstico</small></div>
+    <input type="number" id="inp-idade" placeholder="Ex: 32" min="18" max="80" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:300;padding:12px 14px;width:100%;border-radius:6px;outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(26,29,38,0.1)'">
+  </div>
+  <button class="bp" onclick="confirmarNome()">Continuar →</button>
+  <button class="nav-back" onclick="ir('s0')" style="margin-top:16px;text-align:center;width:100%">← voltar</button>
+  <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:20px;line-height:1.6">Opcional — você pode pular e continuar sem preencher.</div>
 </div>
 
 <!-- S1: INTAKE -->
@@ -361,6 +383,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="proj-display"></div>
   <div class="disc-txt">Mantendo tudo igual, é o que os números apontam. Qualquer mudança altera o resultado.</div>
   <div class="spacer"></div>
+  <button class="bp" onclick="ir('s7b')">Ver o que isso significa →</button>
+</div>
+
+<!-- S7B: MOMENTO DE VIRADA -->
+<div class="screen" id="s7b">
+  <div class="nav-row"><button class="nav-back" onclick="ir('s7')">← voltar</button><button class="nav-restart" onclick="ir('s0')">recomeçar</button></div>
+  <div class="step-ind"><span class="si">Diagnóstico</span><span class="si-arr">→</span><span class="si now">Prognóstico</span><span class="si-arr">→</span><span class="si">Protocolo</span></div>
+  <div class="lbl">o custo de continuar igual</div>
+  <div class="diag-box" id="virada-box" style="border-top-color:var(--red)">
+    <div class="diag-loading" id="virada-loading">
+      <div class="diag-spinner"></div>
+      <div class="diag-loading-txt">Calculando o custo real...</div>
+    </div>
+    <div id="virada-content" style="display:none"></div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">
+    <div class="lbl" style="margin-bottom:8px">e com uma mudança</div>
+    <div id="virada-positivo" style="font-size:15px;color:var(--text2);font-weight:300;line-height:1.7"></div>
+  </div>
+  <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px;line-height:1.6">Projeção baseada nos seus números. Qualquer mudança altera o resultado.</div>
+  <div class="spacer"></div>
   <button class="bp" onclick="ir('s8')">Acessar meu protocolo →</button>
 </div>
 
@@ -410,6 +453,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <input class="cf" type="text" id="cin" placeholder="Faça uma pergunta..." onkeypress="if(event.key==='Enter')enviar()">
     <button class="sb" id="send-btn" onclick="enviar()">↑</button>
   </div>
+  <div class="div-line" style="margin-top:20px"></div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:4px;margin-bottom:8px">
+    <div class="lbl" style="margin-bottom:6px">próximos 30 dias</div>
+    <div style="font-size:14px;color:var(--text2);font-weight:300;line-height:1.7">Daqui a 30 dias, o Risco Humano vai te perguntar se algo mudou nos seus números. Fique de olho no email.</div>
+    <div style="font-size:13px;color:var(--orange);margin-top:8px;font-weight:400">A jornada não termina aqui — ela começa.</div>
+  </div>
+  <button onclick="abrirFeedback()" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;padding:10px 16px;border-radius:6px;width:100%;margin-top:4px;transition:all 0.16s" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(26,29,38,0.1)';this.style.color='var(--text3)'">Deixar feedback sobre o app →</button>
+  <div id="feedback-form" style="display:none;margin-top:10px">
+    <textarea id="feedback-txt" placeholder="O que funcionou? O que faltou? O que te surpreendeu?" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;padding:12px;width:100%;border-radius:6px;outline:none;resize:none;height:100px;line-height:1.6"></textarea>
+    <button class="bp" onclick="enviarFeedback()" style="margin-top:8px">Enviar feedback</button>
+  </div>
+  <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.8">Seus dados ficam apenas no seu dispositivo. &nbsp;·&nbsp; <span onclick="mostrarLGPD()" style="cursor:pointer;text-decoration:underline">Privacidade</span></div>
+</div>
+
+<!-- LGPD MODAL -->
+<div id="lgpd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface);border-radius:10px;padding:24px;max-width:420px;width:100%">
+    <div style="font-size:14px;font-weight:500;margin-bottom:12px;color:var(--text)">Privacidade e dados</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;font-weight:300;margin-bottom:16px">Os dados financeiros que você preenche ficam apenas no seu dispositivo durante a sessão. Não são armazenados em nenhum servidor.<br><br>Coletamos apenas o email que você fornece voluntariamente para envio do protocolo. Usamos esse email exclusivamente para comunicações do Risco Humano. Não vendemos, não compartilhamos, não usamos seus dados para publicidade.</div>
+    <button class="bp" onclick="fecharLGPD()">Entendido</button>
+  </div>
 </div>
 
 </div>
@@ -418,11 +482,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 // ─── ESTADO GLOBAL ────────────────────────────────────────────────────────────
 const D = {
   entrada:'', resps:[], caminho:'', fase:'',
+  nome:'', idade:'', rendaVariavel:false,
   receita:0, fixos:0, variaveis:0, inv:0, saldo:0, reserva:0, patrimonio:0,
   mb:0, ml:0, folego:0, compF:0, pr:0, lb:0, ll:0,
   otimizavel:0, otFatura:0, otDelivery:0,
   gastos:{}, f:{}, v:{},
-  diagTexto:'', contextoChat:''
+  diagTexto:'', contextoChat:'', historico:[]
 };
 
 // ─── INTAKE COM PERGUNTAS COMPORTAMENTAIS ─────────────────────────────────────
@@ -469,7 +534,12 @@ function ir(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 function fmt(el){let v=el.value.replace(/\D/g,'');if(!v){el.value='';return}el.value='R$ '+parseInt(v,10).toLocaleString('pt-BR')}
 function gn(id){const el=document.getElementById(id);if(!el)return 0;const v=el.value.replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.');return parseFloat(v)||0}
 function fmtR(v){return'R$'+Math.round(Math.abs(v)).toLocaleString('pt-BR')}
-function entrada(v){D.entrada=v;qIdx=0;D.resps=[];renderQ();ir('s1')}
+function entrada(v){D.entrada=v;ir('s0b')}
+function confirmarNome(){
+  D.nome=(document.getElementById('inp-nome').value||'').trim();
+  D.idade=(document.getElementById('inp-idade').value||'').trim();
+  qIdx=0;D.resps=[];renderQ();ir('s1');
+}
 function renderProg(){const el=document.getElementById('prog');el.innerHTML='';for(let i=0;i<6;i++){const d=document.createElement('div');d.className='ps'+(i===qIdx?' a':i<qIdx?' d':'');el.appendChild(d)}}
 function renderQ(){
   const q=QS[qIdx];
@@ -501,6 +571,9 @@ function calcular(){
   const otFatura=Math.round(v1*0.20), otDelivery=Math.round(v2*0.30);
   const otimizavel=otFatura+otDelivery;
 
+  // detecta renda variável do intake (resposta 1, índice 0 = pergunta sobre tipo de renda, opção 2 = varia bastante)
+  const rendaVariavel = D.resps[1] === 2;
+  D.rendaVariavel = rendaVariavel;
   Object.assign(D,{receita,fixos,variaveis,inv,saldo,reserva,patrimonio,mb,ml,compF,folego,pr,lb,ll,otimizavel,otFatura,otDelivery});
   D.f={f1,f2,f3,f4,f5,f6}; D.v={v1,v2,v3};
   D.gastos={'Moradia':f1,'Água/Luz/Gás':f2,'Mercado':f3,'Transp. fixo':f4,'Dívidas':f5,'Outros fixos':f6,'Fatura cartão':v1,'Delivery':v2,'Outros variáveis':v3,'Investimento':inv};
@@ -546,7 +619,8 @@ async function chamarDiagnostico(){
         receita: D.receita, fixos: D.fixos, variaveis: D.variaveis, inv: D.inv,
         mb: D.mb, ml: D.ml, compF: D.compF, folego: D.folego,
         patrimonio: D.patrimonio, pr: D.pr, gastos: D.gastos,
-        respostas: respostasTexto
+        respostas: respostasTexto,
+        nome: D.nome, idade: D.idade, rendaVariavel: D.rendaVariavel
       }
     });
 
@@ -559,6 +633,8 @@ async function chamarDiagnostico(){
 
     // Inicializa chat com contexto
     initChat();
+    // Prepara momento de virada em background
+    prepararVirada();
   } catch(e) {
     loading.style.display='none';
     content.style.display='block';
@@ -567,7 +643,77 @@ async function chamarDiagnostico(){
 }
 
 function buildContexto(){
-  return `Perfil: renda ${fmtR(D.receita)}/mês, custos fixos ${D.compF}% da renda, margem bruta ${D.mb}%, margem líquida ${D.ml}%, fôlego ${D.folego} meses, patrimônio ${fmtR(D.patrimonio)}, fase: ${D.fase}. Diagnóstico: ${D.diagTexto}`;
+  const nomeStr = D.nome ? `Nome: ${D.nome}. ` : '';
+  const idadeStr = D.idade ? `Idade: ${D.idade} anos. ` : '';
+  return `${nomeStr}${idadeStr}Perfil: renda ${fmtR(D.receita)}/mês, custos fixos ${D.compF}% da renda, margem bruta ${D.mb}%, margem líquida ${D.ml}%, fôlego ${D.folego} meses, patrimônio ${fmtR(D.patrimonio)}, fase: ${D.fase}. Diagnóstico: ${D.diagTexto}`;
+}
+
+async function prepararVirada(){
+  try {
+    const resp = await chamarAPI({
+      tipo: 'virada',
+      dados: {
+        receita: D.receita, ml: D.ml, folego: D.folego,
+        patrimonio: D.patrimonio, fase: D.fase,
+        nome: D.nome, idade: D.idade,
+        ll: D.ll, fixos: D.fixos, variaveis: D.variaveis
+      }
+    });
+    // Guarda para quando a tela abrir
+    D.viradaTexto = resp;
+    // Pré-renderiza
+    const vl = document.getElementById('virada-loading');
+    const vc = document.getElementById('virada-content');
+    const vp = document.getElementById('virada-positivo');
+    if(vl) vl.style.display='none';
+    if(vc && resp){
+      vc.style.display='block';
+      vc.innerHTML = `<div style="font-size:16px;color:var(--text);line-height:1.75;font-weight:300">${resp}</div>`;
+    }
+    // Calcula positivo
+    const mlV = Math.max(0, D.ll);
+    const idadeNum = parseInt(D.idade)||35;
+    const anos10 = Math.round(mlV*12*10);
+    const otimo = Math.round((mlV + D.receita*0.1)*12*10);
+    if(vp) vp.innerHTML = `Com uma mudança de 10% no padrão de gastos, você acumula <strong style="color:var(--green)">${fmtR(otimo)}</strong> em 10 anos em vez de <strong>${fmtR(anos10)}</strong>. Diferença de <strong style="color:var(--green)">${fmtR(otimo-anos10)}</strong>.`;
+  } catch(e) {
+    console.log('Virada error:', e);
+  }
+}
+
+function abrirFeedback(){
+  const f = document.getElementById('feedback-form');
+  if(f) f.style.display = f.style.display==='none'?'block':'none';
+}
+
+async function enviarFeedback(){
+  const txt = document.getElementById('feedback-txt').value.trim();
+  if(!txt) return;
+  try {
+    await fetch('https://formspree.io/f/meepywdz', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({
+        tipo: 'feedback',
+        feedback: txt,
+        email: D.email||'',
+        fase: D.fase||'',
+        diagnostico: D.diagTexto||''
+      })
+    });
+    document.getElementById('feedback-form').innerHTML = '<div style="font-size:13px;color:var(--green);padding:10px 0">Obrigado. Isso ajuda muito.</div>';
+  } catch(e) {
+    console.log('Feedback error:', e);
+  }
+}
+
+function mostrarLGPD(){
+  const m = document.getElementById('lgpd-modal');
+  if(m){ m.style.display='flex'; }
+}
+function fecharLGPD(){
+  const m = document.getElementById('lgpd-modal');
+  if(m){ m.style.display='none'; }
 }
 
 function formatarDiag(texto){
@@ -871,12 +1017,15 @@ async function ativar(){
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({
         email:e,
+        nome:D.nome||'',
+        idade:D.idade||'',
         diagnostico:D.diagTexto||'',
         fase:D.fase||'',
         renda:D.receita||0,
         margem_liquida:D.ml||0,
         folego:D.folego||0,
-        patrimonio:D.patrimonio||0
+        patrimonio:D.patrimonio||0,
+        renda_variavel:D.rendaVariavel||false
       })
     });
   }catch(err){console.log('Formspree error:',err)}
