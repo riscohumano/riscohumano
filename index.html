@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Risco Humano — Arquitetura de Decisão Financeira</title>
-<meta name="description" content="Pela primeira vez, você vai saber o que está acontecendo com o seu dinheiro — e o que fazer amanhã cedo.">
+<title>Risco Humano — Clareza financeira na palma da sua mão.</title>
+<meta name="description" content="A diferença entre quem sobrevive ao mês e quem constrói o próximo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -201,10 +201,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <span style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8e9a;font-weight:500">Risco Humano</span>
   </div>
   <div class="sp"></div>
-  <div class="h1">Você trabalha, ganha, paga as contas. Mas no fim do mês, o patrimônio não cresce. <b>Isso tem nome.</b></div>
+  <div class="h1">O dinheiro entra. A vida puxa. No fim do mês, você se pergunta: <b>como já foi tanto?</b></div>
   <div class="div-line"></div>
-  <div class="sub" style="margin-bottom:10px">O Risco Humano não é um app de orçamento. É uma arquitetura de decisão — para você parar de ser conduzido e começar a conduzir.</div>
-  <div style="font-size:13px;color:var(--text3);font-weight:300;margin-bottom:28px;line-height:1.6;font-style:italic">Pela primeira vez, você vai saber o que está acontecendo com o seu dinheiro — e o que fazer amanhã cedo.</div>
+  <div class="sub" style="margin-bottom:8px">Nem sempre é gasto. Às vezes é compromisso demais. Às vezes é o jeito como você decide.</div>
+  <div style="font-size:14px;color:var(--text3);font-weight:300;margin-bottom:6px;line-height:1.6;font-style:italic">A diferença entre quem sobrevive ao mês e quem constrói o próximo.</div>
+  <div style="font-size:12px;color:var(--text3);font-weight:300;margin-bottom:28px;line-height:1.6">Clareza financeira na palma da sua mão.</div>
   <button class="cb" onclick="entrada('A')">Nunca sobra nada<span class="ex">O salário some antes do fim do mês. Às vezes preciso do cartão ou de ajuda para fechar.</span></button>
   <button class="cb" onclick="entrada('B')">Sobra, mas some<span class="ex">Tem dinheiro no começo do mês. No fim, sumiu. Não virou reserva nem investimento.</span></button>
   <button class="cb" onclick="entrada('C')">Estou bem, quero ir mais rápido<span class="ex">Tenho reserva, invisto, não devo. Mas sinto que poderia avançar muito mais.</span></button>
@@ -243,7 +244,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- S2: LOADING -->
 <div class="screen" id="s2">
-  <div class="proc"><div class="sp2"></div><div class="pt">Mapeando o padrão.<br>Não o quanto você gasta.<br>Como você decide.</div></div>
+  <div class="proc"><div class="sp2"></div><div class="pt">Dinheiro é psicologia no tempo.<br><br>Mapeando o que os números dizem sobre como você decide.</div></div>
 </div>
 
 <!-- S3: FORM DRE -->
@@ -285,7 +286,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div class="ni"><div class="nl">Veículo<small>Valor estimado de mercado</small></div><input type="text" id="p6" placeholder="R$ 0" oninput="fmt(this)" inputmode="numeric"></div>
   </div>
-  <button class="bp" onclick="calcular()" style="margin-top:4px">Calcular meu diagnóstico →</button>
+  <button class="bp" onclick="calcular()" style="margin-top:4px">Ver meu diagnóstico →</button>
 </div>
 
 <!-- S4: RESULTADO + DIAG IA -->
@@ -301,6 +302,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div id="diag-content" style="display:none"></div>
   </div>
   <div class="pr" id="phase-display"></div>
+  <div style="text-align:center;margin:8px 0 16px;font-size:13px;color:var(--text3);font-weight:300;letter-spacing:0.08em;font-style:italic">Você decide.</div>
   <button class="bp" onclick="ir('s5')">Entender onde estou na jornada →</button>
 </div>
 
@@ -379,8 +381,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- S8: PAYWALL -->
 <div class="screen" id="s8">
   <div class="nav-row"><button class="nav-back" onclick="ir('s7b')">← voltar</button><button class="nav-restart" onclick="reiniciar()">recomeçar</button></div>
-  <div class="h1" style="font-size:21px">Você acabou de ver o que poucos param para calcular.<br><b>O próximo passo é o que muda.</b></div>
-  <div class="sub" style="margin-top:8px;margin-bottom:22px">O protocolo transforma números em ação. Sem ele, você sabe o problema — mas não sabe o que mudar amanhã cedo.</div>
+  <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--orange);font-weight:500;margin-bottom:16px">Você no comando do seu dinheiro.</div>
+  <div class="h1" style="font-size:21px">Você acabou de ver o que a maioria nunca para para calcular.<br><b>Agora vem a parte que muda.</b></div>
+  <div class="sub" style="margin-top:8px;margin-bottom:22px">O protocolo transforma o diagnóstico em ação concreta. Sem ele, você sabe o padrão — mas não sabe o que fazer amanhã cedo.</div>
   <div class="pw-box">
     <div class="lbl">o que você acessa agora — gratuitamente</div>
     <div class="pw-val">
@@ -425,10 +428,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <button class="sb" id="send-btn" onclick="enviar()">↑</button>
   </div>
   <div class="div-line" style="margin-top:20px"></div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:4px;margin-bottom:8px">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:4px;margin-bottom:8px">
     <div class="lbl" style="margin-bottom:6px">próximos 30 dias</div>
-    <div style="font-size:14px;color:var(--text2);font-weight:300;line-height:1.7">Daqui a 30 dias, o Risco Humano vai te perguntar se algo mudou nos seus números. Fique de olho no email.</div>
-    <div style="font-size:13px;color:var(--orange);margin-top:8px;font-weight:400">A jornada não termina aqui — ela começa.</div>
+    <div style="font-size:13px;color:var(--text2);font-weight:300;line-height:1.7">Fique de olho no email — em 30 dias o Risco Humano vai te perguntar se algo mudou nos seus números.</div>
+  </div>
+  <div style="text-align:center;margin:24px 0 20px;padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div style="font-size:28px;font-weight:300;color:var(--text);letter-spacing:-0.02em">Você decide.</div>
+    <div style="font-size:13px;color:var(--text3);font-weight:300;margin-top:6px">A jornada não termina aqui — ela começa.</div>
   </div>
   <button onclick="abrirFeedback()" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;padding:10px 16px;border-radius:6px;width:100%;margin-top:4px;transition:all 0.16s" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(26,29,38,0.1)';this.style.color='var(--text3)'">Deixar feedback sobre o app →</button>
   <div id="feedback-form" style="display:none;margin-top:10px">
@@ -795,10 +801,10 @@ function renderFasePills(){
 
 function renderJourney(){
   const fases=[
-    {nome:'Proteção',cor:'#c0392b',desc:'Foco em não piorar. Criar o mínimo de segurança: parar de sangrar, construir fôlego, sair do modo de sobrevivência.'},
-    {nome:'Margem',cor:'#eb5c20',desc:'Você tem folga, mas ela some. O trabalho é dar destino intencional ao que sobra — reserva, investimento, objetivos.'},
-    {nome:'Decisão',cor:'#2d7a5a',desc:'Você tem base. O foco é fazer escolhas mais inteligentes — alocação, alavanca, velocidade de crescimento.'},
-    {nome:'Opcionalidade',cor:'#1a6b8a',desc:'Você tem escolha real: pode mudar de carreira, assumir um risco calculado, viver com mais liberdade.'}
+    {nome:'Proteção',cor:'#c0392b',desc:'Todo mês é uma corrida. O salário entra e já tem dono antes de chegar.'},
+    {nome:'Margem',cor:'#eb5c20',desc:'Sobra, mas some. Você sabe que dá pra guardar mais — mas no fim do mês o dinheiro foi embora sem avisar.'},
+    {nome:'Decisão',cor:'#2d7a5a',desc:'Você não deve, tem reserva. Mas olha pro patrimônio e sente que poderia estar muito mais à frente.'},
+    {nome:'Opcionalidade',cor:'#1a6b8a',desc:'Você tem escolha real. Pode dizer não. Pode esperar. Pode mudar sem desespero.'}
   ];
   let h='';fases.forEach(f=>{const atual=f.nome===D.fase;h+=`<div class="jc" style="${atual?'border-color:var(--orange);border-left:3px solid var(--orange)':''}"><div class="jph"><div class="jdot" style="background:${f.cor}${atual?';box-shadow:0 0 0 3px rgba(235,92,32,0.15)':''}"></div><div><div class="jtit" style="${atual?'color:var(--orange)':''}">${f.nome}${atual?' ← você está aqui':''}</div><div class="jdesc">${f.desc}</div></div></div></div>`});
   document.getElementById('journey-display').innerHTML=h;
